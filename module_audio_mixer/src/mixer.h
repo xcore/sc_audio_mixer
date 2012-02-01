@@ -14,9 +14,12 @@
 #define MIXER_CMD_KILL           (11)
 
 /* Mixer thread */
-int Mixer(chanend c_in, chanend c_out, chanend c_ctrl);
+void Mixer(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl);
 
 /* Update a mixer node's weight */
 void Mixer_UpdateWeight(chanend c_ctrl, unsigned mix, unsigned channel, unsigned weight);
+
+/* Instruct the mixer thread to close down */
+void Mixer_Kill(chanend c_ctrl);
 
 
