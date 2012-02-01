@@ -4,6 +4,7 @@
 
 #include "mixer.h"
 
+/* Sinwave tables */
 int g_sinewave[8][48] =
 	{
 		{ // Channel 0
@@ -67,7 +68,6 @@ void DoSamples(streaming chanend c_in, streaming chanend c_out)
     }
 
 }
-
 
 void MixerTest(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
 {
