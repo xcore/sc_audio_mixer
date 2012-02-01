@@ -31,7 +31,7 @@ This repo contains audio mixer and example application.
 
 There is an example application included in this module.
 
-app_multi_uart_demo - This is a self contained test application for testing the mixer.  It passes sin waves into the mixer.
+    * app_multi_uart_demo - This is a self contained test application for testing the mixer.  It passes sin waves into the mixer.
 
 The primary module is module_audio_mixer. This contains the audio mixer module and provides mixing functionality along with an API for using it.
 
