@@ -1,4 +1,4 @@
-USB library
+sc_audio_mixer
 ...........
 
 :Stable release:  unreleased
@@ -7,24 +7,23 @@ USB library
 
 :Maintainer:  
 
-:Description:  Library to interface with USB2 PHY
+:Description:  Audio mixer
 
 
 Key Features
 ============
 
-* Library to perform low level functions (IN and OUT a block of data)
-* Source code to deal with common requests of endpoint0
+* Build-time configurable input/output count
 
 To Do
 =====
 
-* Port documentation
+* Add routing
 
 Firmware Overview
 =================
 
-This repo contains the binary XUD USB interface library.
+This repo contains audio mixer and example applicaton
 
 Known Issues
 ============
