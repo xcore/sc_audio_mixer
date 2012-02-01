@@ -80,16 +80,16 @@ void MixerTest(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
     Mixer_UpdateWeight(c_ctrl, 1, 1, 0x900000);  
     DoSamples(c_in, c_out); 
 
-    printstr("Mix 0: Mix in channel 1\n");
+    printstr("#Mix 0: Mix in channel 1\n");
     Mixer_UpdateWeight(c_ctrl, 0, 1, 0x900000);  
     DoSamples(c_in, c_out); 
 
-    printstr("Mix 1: Mix channel 1 and 2\n");
+    printstr("#Mix 1: Mix channel 1 and 2\n");
     Mixer_UpdateWeight(c_ctrl, 1, 1, 0xa00000);  
     Mixer_UpdateWeight(c_ctrl, 1, 2, 0x900000);  
     DoSamples(c_in, c_out); 
 
-    printstr("Mix1: Saturation test\n");
+    printstr("#Mix1: Saturation test\n");
     Mixer_UpdateWeight(c_ctrl, 0, 1, 0x2000000);  
     Mixer_UpdateWeight(c_ctrl, 0, 2, 0x200000);  
     DoSamples(c_in, c_out); 
