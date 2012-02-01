@@ -5,20 +5,24 @@ sc_audio_mixer
 
 :Status:  first port to github
 
-:Maintainer:  
+:Maintainer: xross
 
-:Description:  Audio mixer
+:Description:  Audio mixer component
 
 
 Key Features
 ============
 
 * Build-time configurable input/output count
+* Runs in a thread and takes samples in via a channel, and outputs mixes via another channel
+* Control commands come in from a third control channel
+* Includes saturation 
 
 To Do
 =====
 
 * Add routing
+* Add db
 
 Firmware Overview
 =================
