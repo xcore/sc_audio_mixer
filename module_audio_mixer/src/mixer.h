@@ -1,5 +1,5 @@
 
-#include "params.h"
+#include "mixerparams.h"
 
 #define MIXER_MAX_VOL            0x20000000
 
@@ -8,4 +8,9 @@
 #define MIXER_CMD_KILL           11
 
 /* Mixer thread */
-int mixer(chanend c_in, chanend c_out, chanend c_ctrl);
+int Mixer(chanend c_in, chanend c_out, chanend c_ctrl);
+
+/* Update a mixer node's weight */
+void Mixer_UpdateWeight(chanend c_ctrl, unsigned mix, unsigned channel, unsigned weight);
+
+
