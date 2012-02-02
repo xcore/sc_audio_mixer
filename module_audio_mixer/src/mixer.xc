@@ -4,6 +4,10 @@
 
 #include "mixer.h"
 
+#pragma xta command "add exclusion exit_"
+#pragma xta command "analyse path sample_input sample_output"
+#pragma xta command "set required - 5200 ns" /* 192kHz */
+
 void Mixer_UpdateWeight(chanend c_ctrl, unsigned mix, unsigned channel, unsigned weight)
 {
     c_ctrl <: MIXER_CMD_MIX_MULT;
@@ -17,6 +21,7 @@ void Mixer_Kill(chanend c_ctrl)
     c_ctrl <: MIXER_CMD_KILL;
 }
 
+/* Performs the actual mix */
 int doMix(int samples[], int mult[])
 {
     int h=0; 
@@ -28,7 +33,7 @@ int doMix(int samples[], int mult[])
         {h,l} = macs(samples[i], mult[i], h, l);
     }
     
-    /* Perform saturation */
+    /* Perform saturation check and limit */
     l = sext(h, 25);
 
     if(l != h)
@@ -41,6 +46,7 @@ int doMix(int samples[], int mult[])
     return h<<7;
 }
 
+/* Main mixer thread */
 void Mixer(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
 {
     int samplesIn[MIXER_NUM_CHAN_IN];
@@ -85,6 +91,7 @@ void Mixer(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
 
                     case MIXER_CMD_MIX_MULT:
                         {
+                            /* Update a particular mixer node */
                             int weight, channel, mix;
                             c_ctrl :> mix;
                             c_ctrl :> channel;
@@ -95,12 +102,14 @@ void Mixer(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
                         break;
 
                      case MIXER_CMD_KILL:
+#pragma xta endpoint "exit_"
+                        /* Kill command, kill thread */
                         return;
-
 
                 }
                 break;
 
+#pragma xta endpoint "sample_input"
             case c_in :> samplesIn[0]:
 
                 /* Receive samples into local buffer */
@@ -115,15 +124,14 @@ void Mixer(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
                     samplesOut[i] = doMix(samplesIn, mult_Mix[i]);
                 }
 
+#pragma xta endpoint "sample_output"
                 /* Output samples from buffer */
                 for(int i = 0; i < MIXER_NUM_CHAN_OUT; i++)
                 {
                     c_out <: samplesOut[i];
                 }
-            
                 break;           
         }
     }
-
 }
 
