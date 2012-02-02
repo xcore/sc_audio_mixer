@@ -98,6 +98,13 @@ void MixerTest(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
     Mixer_Kill(c_ctrl);
 }
 
+void burn(void)
+{
+    int x = 1;
+    while(1)
+        x *=2;
+}
+
 int main(void)
 {
     streaming chan c_in, c_out;
@@ -110,6 +117,13 @@ int main(void)
 
         /* Call thread to test mixer */
         MixerTest(c_in, c_out, c_ctrl);
+
+        burn();
+        burn();
+        burn();
+        burn();
+        burn();
+        burn();
     }
 
     return 0;
