@@ -19,7 +19,7 @@ APP_NAME = app_example_mixer
 #
 # If the variable XCC_MAP_FLAGS is set it overrides the flags passed to 
 # xcc for the final link (mapping) stage.
-XCC_FLAGS = -Wall -O3 -report
+XCC_FLAGS = -Wall -O3 -report -g
 
 # The USED_MODULES variable lists other module used by the application. 
 USED_MODULES = module_audio_mixer
