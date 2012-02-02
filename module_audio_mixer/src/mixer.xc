@@ -22,7 +22,8 @@ void Mixer_Kill(chanend c_ctrl)
 }
 
 /* Performs the actual mix */
-int doMix(int samples[], int mult[])
+#pragma unsafe arrays
+static inline int doMix(int samples[], int mult[])
 {
     int h=0; 
     int l=0; 
@@ -47,6 +48,7 @@ int doMix(int samples[], int mult[])
 }
 
 /* Main mixer thread */
+#pragma unsafe arrays
 void Mixer(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
 {
     int samplesIn[MIXER_NUM_CHAN_IN];
@@ -112,13 +114,16 @@ void Mixer(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
 #pragma xta endpoint "sample_input"
             case c_in :> samplesIn[0]:
 
+
                 /* Receive samples into local buffer */
+#pragma loop unroll
                 for(int i = 1; i < MIXER_NUM_CHAN_IN; i++)
                 {
                     c_in :> samplesIn[i];
                 } 
 
                 /* Lets do some mixing baby */
+#pragma loop unroll
                 for(int i = 0; i < MIXER_NUM_CHAN_OUT; i++)
                 {
                     samplesOut[i] = doMix(samplesIn, mult_Mix[i]);
@@ -126,6 +131,7 @@ void Mixer(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
 
 #pragma xta endpoint "sample_output"
                 /* Output samples from buffer */
+#pragma loop unroll
                 for(int i = 0; i < MIXER_NUM_CHAN_OUT; i++)
                 {
                     c_out <: samplesOut[i];
