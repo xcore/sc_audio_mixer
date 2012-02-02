@@ -42,7 +42,14 @@ void DoSamples(streaming chanend c_in, streaming chanend c_out)
         /* Send out our sine waves */
         for(int j = 0; j < MIXER_NUM_CHAN_IN; j++)
         {
-            c_in <: g_sinewave[j][i]<<8;               
+            if(j < 8)
+            {
+                c_in <: g_sinewave[j][i]<<8; 
+            }
+            else
+            {
+                c_in <: 0;              
+            }
         } 
  
         /* Receive mixes back.. */
@@ -54,7 +61,14 @@ void DoSamples(streaming chanend c_in, streaming chanend c_out)
         /* Print input samples */
         for(int j = 0; j < MIXER_NUM_CHAN_IN; j++)
         {
-            printint(g_sinewave[j][i]<<8);  
+            if(j < 8)
+            {
+                printint(g_sinewave[j][i]<<8);  
+            }
+            else
+            {
+                printint(0);
+            }
             printstr(" ");             
         } 
 
