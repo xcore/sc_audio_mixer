@@ -22,7 +22,6 @@ Key Features
 To Do
 =====
 
-* Add XTA timing pragmas
 * Add two thread example
 * Add routing
 * Add db
