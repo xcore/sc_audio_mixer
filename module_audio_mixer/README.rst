@@ -12,7 +12,8 @@ it in a typical application.
 The mixer includes a "saturation" check and limiting to avoid wrap-around issues.  Mixes are 
 clipped at +/- full range.
 
-
+The mixer expects samples left aligned in a word, so if you have 24bit samples shift them up 8
+bits.  16 bits for 16bit samples etc.
 
 
 
