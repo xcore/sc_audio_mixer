@@ -39,7 +39,16 @@ The primary module is module_audio_mixer. This contains the audio mixer module w
 Issues
 ======
 
-* None so far...
+* When compiled on 11.2.2 tools the program traps on termination:
+    TRAP ET: 4, SPC: 000103ee, SSR: 0, ED: 00000002 (ILLEGAL_RESOURCE: Src chanend in use)
+
+    This appears to be an issue with the 11.2.2 tools release.
+
+    Possible work-arounds:
+        - Use platform.h and stdcore[] syntax. This enforces mapper generation on channel allocation rather than compiler
+        - Use beta release of XMOS tools (available from xmos.com)
+
+* See github issue tracking for other issues
 
 Required Repositories
 =====================
