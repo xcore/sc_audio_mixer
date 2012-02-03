@@ -4,7 +4,7 @@
 
 #include "mixer.h"
 
-#define MIXER_COUNT 1
+#define MIXER_COUNT 2
 
 #if(MIXER>2)
 #error only MIXER_COUNT up to 2 supported
@@ -39,9 +39,10 @@ int g_sinewave[8][48] =
 		}
 	};
 
-void DoSamples(streaming chanend c_in, streaming chanend c_out)
+void DoSamples(streaming chanend c_in[], streaming chanend c_out[])
 {
-    unsigned buffer[MIXER_NUM_CHAN_IN];
+    int buffer[MIXER_NUM_CHAN_IN];
+    int receivedMixes[MIXER_COUNT][MIXER_NUM_CHAN_OUT];
 
     for(int i = 0; i < 48; i++)
     {
@@ -50,18 +51,30 @@ void DoSamples(streaming chanend c_in, streaming chanend c_out)
         {
             if(j < 8)
             {
-                c_in <: g_sinewave[j][i]<<8; 
+                buffer[j] = g_sinewave[j][i]<<8; 
             }
             else
             {
-                c_in <: 0;              
+                buffer[j] = 0;              
             }
         } 
- 
-        /* Receive mixes back.. */
-        for(int i = 0; i < MIXER_NUM_CHAN_OUT; i++)
+
+        /* Output samples to mixer(s) */
+        for(int k = 0; k < MIXER_COUNT; k++)
         {
-            c_out :> buffer[i];
+            for (int j = 0; j < MIXER_NUM_CHAN_IN; j++)
+            {
+                c_in[k] <: buffer[j];
+            }
+        }
+
+        /* Receive mixes back.. */
+        for(int k = 0; k < MIXER_COUNT; k++)
+        {
+            for (int j = 0; j < MIXER_NUM_CHAN_OUT; j++)
+            {
+                c_out[k] :> receivedMixes[k][j];
+            }
         }
 
         /* Print input samples */
@@ -81,7 +94,7 @@ void DoSamples(streaming chanend c_in, streaming chanend c_out)
         /* Print received samples*/
         for(int i = 0; i < MIXER_NUM_CHAN_OUT; i++)
         {
-            printint(buffer[i]);
+            printint(receivedMixes[0][i]);
             printstr(" ");
         }
         printstrln("");        
@@ -89,33 +102,36 @@ void DoSamples(streaming chanend c_in, streaming chanend c_out)
 
 }
 
-void MixerTest(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
+void MixerTest(streaming chanend c_in[], streaming chanend c_out[], chanend c_ctrl[])
 {
     printstr("#Original Channels\n");    
     DoSamples(c_in, c_out);   
     
-    /* Update some volumes */
+    /* Update some weights in mixer thread 0 */
     printstr("#Nobble weights\n"); 
-    Mixer_UpdateWeight(c_ctrl, 0, 0, 0x900000);  
-    Mixer_UpdateWeight(c_ctrl, 1, 1, 0x900000);  
+    Mixer_UpdateWeight(c_ctrl[0], 0, 0, 0x900000);  
+    Mixer_UpdateWeight(c_ctrl[0], 1, 1, 0x900000);  
     DoSamples(c_in, c_out); 
 
     printstr("#Mix 0: Mix in channel 1\n");
-    Mixer_UpdateWeight(c_ctrl, 0, 1, 0x900000);  
+    Mixer_UpdateWeight(c_ctrl[0], 0, 1, 0x900000);  
     DoSamples(c_in, c_out); 
 
     printstr("#Mix 1: Mix channel 1 and 2\n");
-    Mixer_UpdateWeight(c_ctrl, 1, 1, 0xa00000);  
-    Mixer_UpdateWeight(c_ctrl, 1, 2, 0x900000);  
+    Mixer_UpdateWeight(c_ctrl[0], 1, 1, 0xa00000);  
+    Mixer_UpdateWeight(c_ctrl[0], 1, 2, 0x900000);  
     DoSamples(c_in, c_out); 
 
     printstr("#Mix1: Saturation test\n");
-    Mixer_UpdateWeight(c_ctrl, 0, 1, 0x2000000);  
-    Mixer_UpdateWeight(c_ctrl, 0, 2, 0x200000);  
+    Mixer_UpdateWeight(c_ctrl[0], 0, 1, 0x2000000);  
+    Mixer_UpdateWeight(c_ctrl[0], 0, 2, 0x200000);  
     DoSamples(c_in, c_out); 
 
-    /* Kill off mixer thread */
-    Mixer_Kill(c_ctrl);
+    /* Kill off mixer thread(s) */
+    for(int i = 0; i < MIXER_COUNT; i++)
+    {    
+        Mixer_Kill(c_ctrl[i]);
+    }
 }
 
 void dummy()
@@ -130,14 +146,18 @@ int main(void)
 
     par
     {
+        /* Call thread to test mixer(s) */
+        MixerTest(c_in, c_out, c_ctrl);
+       
         /* Call mixer thread */
         Mixer(c_in[0], c_out[0], c_ctrl[0]);
 
-        /* Call thread to test mixer */
-        MixerTest(c_in[0], c_out[0], c_ctrl[0]);
-
+#if (MIXER_COUNT >= 2)
+        Mixer(c_in[1], c_out[1], c_ctrl[1]);
+#else
         /* Some dummy threads - so we get worst case XTA timing */
         dummy();
+#endif     
         dummy();
         dummy();
         dummy();
