@@ -4,7 +4,7 @@
 
 #include "mixer.h"
 
-#define MIXER_COUNT 2
+#define MIXER_COUNT 1
 
 #if(MIXER>2)
 #error only MIXER_COUNT up to 2 supported
