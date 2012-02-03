@@ -22,9 +22,8 @@ Key Features
 To Do
 =====
 
-* Add two thread example
 * Add routing
-* Add db
+* Add dB control
 
 Firmware Overview
 =================
