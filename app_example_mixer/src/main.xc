@@ -4,6 +4,12 @@
 
 #include "mixer.h"
 
+#define MIXER_COUNT 1
+
+#if(MIXER>2)
+#error only MIXER_COUNT up to 2 supported
+#endif
+
 /* Sinwave tables */
 int g_sinewave[8][48] =
 	{
@@ -112,32 +118,31 @@ void MixerTest(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
     Mixer_Kill(c_ctrl);
 }
 
-void burn(void)
+void dummy()
 {
-    int x = 1;
-    while(1)
-        x *=2;
+
 }
 
 int main(void)
 {
-    streaming chan c_in, c_out;
-    chan c_ctrl;
+    streaming chan c_in[MIXER_COUNT], c_out[MIXER_COUNT];
+    chan c_ctrl[MIXER_COUNT];
 
     par
     {
         /* Call mixer thread */
-        Mixer(c_in, c_out, c_ctrl);
+        Mixer(c_in[0], c_out[0], c_ctrl[0]);
 
         /* Call thread to test mixer */
-        MixerTest(c_in, c_out, c_ctrl);
+        MixerTest(c_in[0], c_out[0], c_ctrl[0]);
 
-        burn();
-        burn();
-        burn();
-        burn();
-        burn();
-        burn();
+        /* Some dummy threads - so we get worst case XTA timing */
+        dummy();
+        dummy();
+        dummy();
+        dummy();
+        dummy();
+        dummy();
     }
 
     return 0;
