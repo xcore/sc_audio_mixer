@@ -52,7 +52,7 @@ static inline int doMix(int samples[], int mult[])
 void Mixer(streaming chanend c_in, streaming chanend c_out, chanend c_ctrl)
 {
     int samplesIn[MIXER_NUM_CHAN_IN];
-    unsigned samplesOut[MIXER_NUM_CHAN_IN];
+    unsigned samplesOut[MIXER_NUM_CHAN_OUT];
 
     /* Mix weight table */
     int mult_Mix[MIXER_NUM_CHAN_OUT][MIXER_NUM_CHAN_IN];
